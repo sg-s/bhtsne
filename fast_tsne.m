@@ -92,6 +92,7 @@ function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
         disp('using cached data...')
         return
     else
+        disp('No data for this hash')
     end
     
     % Perform the initial dimensionality reduction using PCA

@@ -61,8 +61,8 @@ function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
 
     % modify environment to get paths for non-matlab code right
     path1 = getenv('PATH');
-    if isempty(strfind(path1,[':' fileparts(which('fast_tsne'))]))
-        path1 = [path1 ':' fileparts(which('fast_tsne'))];
+    if isempty(strfind(path1,[pathsep fileparts(which('fast_tsne'))]))
+        path1 = [path1 pathsep fileparts(which('fast_tsne'))];
     end
     setenv('PATH', path1);
 

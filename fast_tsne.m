@@ -1,4 +1,4 @@
-function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
+function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta, max_iter)
 %FAST_TSNE Runs the C++ implementation of Barnes-Hut t-SNE
 %
 %   mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
@@ -79,6 +79,11 @@ function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
         theta = 0.5;
     end
 
+    if ~exist('max_iter', 'var') || isempty(max_iter)
+       max_iter = 1000; 
+    end
+    
+
     temp = struct;
     temp.X = X;
     temp.no_dims = no_dims;
@@ -109,7 +114,7 @@ function mappedX = fast_tsne(X, no_dims, initial_dims, perplexity, theta)
     clear covX M lambda
     
     % Run the fast diffusion SNE implementation
-    write_data(X, no_dims, theta, perplexity);
+    write_data(X, no_dims, theta, perplexity,max_iter);
     tic, system('bh_tsne'); toc
     [mappedX, landmarks, costs] = read_data;   
     landmarks = landmarks + 1;              % correct for Matlab indexing
@@ -138,12 +143,11 @@ end
 % Reads the result file from the fast t-SNE implementation
 function [X, landmarks, costs] = read_data
     h = fopen('result.dat', 'rb');
-	n = fread(h, 1, 'integer*4');
-	d = fread(h, 1, 'integer*4');
-	X = fread(h, n * d, 'double');
+    n = fread(h, 1, 'integer*4');
+    d = fread(h, 1, 'integer*4');
+    X = fread(h, n * d, 'double');
     landmarks = fread(h, n, 'integer*4');
-    landmarks = landmarks + 1;
     costs = fread(h, n, 'double');      % this vector contains only zeros
     X = reshape(X, [d n])';
-	fclose(h);
+    fclose(h);
 end
